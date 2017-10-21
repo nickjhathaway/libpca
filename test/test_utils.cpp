@@ -8,7 +8,7 @@ using namespace std;
 using namespace stats::utils;
 
 test_utils::test_utils() {
-    srand(1);
+    srand(2);
 }
 
 void test_utils::test_make_covariance_matrix() {
@@ -19,11 +19,27 @@ void test_utils::test_make_covariance_matrix() {
 	assert_equal_containers(exp, result, SPOT);
 }
 
+template <typename Container>
+std::string conToStr(const Container& con,
+                     const std::string& delim = " ") {
+  if (con.empty()) {
+    return "";
+  }
+  std::stringstream out;
+  std::copy(con.begin(), con.end(),
+       std::ostream_iterator<typename Container::value_type>(out, delim.c_str()));
+  std::string ret = out.str();
+  ret.erase(ret.size() - delim.size());
+  return ret;
+}
 void test_utils::test_make_shuffled_matrix() {
 	const vector<double> vec = {4,1,1,2,5,2,3,3,6};
 	const arma::Mat<double> data(&vec.front(), 3, 3);
 	const auto result = make_shuffled_matrix(data);
 	const vector<double> vec2 = {1,1,4,5,2,5,3,3,3};
+	std::cout << conToStr(result) << std::endl;
+	std::cout << conToStr(vec2) << std::endl;
+
 	const arma::Mat<double> exp(&vec2.front(), 3, 3);
 	assert_equal_containers(exp, result, SPOT);
 }
