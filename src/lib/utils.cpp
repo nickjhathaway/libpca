@@ -6,6 +6,20 @@
 namespace stats {
 namespace utils {
 
+template <typename Container>
+std::string conToStr(const Container& con,
+                     const std::string& delim = " ") {
+  if (con.empty()) {
+    return "";
+  }
+  std::stringstream out;
+  std::copy(con.begin(), con.end(),
+       std::ostream_iterator<typename Container::value_type>(out, delim.c_str()));
+  std::string ret = out.str();
+  ret.erase(ret.size() - delim.size());
+  return ret;
+}
+
 arma::Mat<double> make_covariance_matrix(const arma::Mat<double>& data) {
 	return (data.t()*data) * (1./(data.n_rows-1));
 }
