@@ -36,7 +36,9 @@ void test_utils::test_make_shuffled_matrix() {
 	const vector<double> vec = {4,1,1,2,5,2,3,3,6};
 	const arma::Mat<double> data(&vec.front(), 3, 3);
 	const auto result = make_shuffled_matrix(data);
-	const vector<double> vec2 = {1,1,4,5,2,5,3,3,3};
+	const vector<double> vec2 = {1,1,4,5,5,5,3,3,3};
+	std::cout << std::endl;
+	std::cout << conToStr(vec) << std::endl;
 	std::cout << conToStr(result) << std::endl;
 	std::cout << conToStr(vec2) << std::endl;
 
