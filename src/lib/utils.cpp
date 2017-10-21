@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <sstream>
 #include <numeric>
+#include <iostream>
+#include <iterator>
 
 namespace stats {
 namespace utils {
