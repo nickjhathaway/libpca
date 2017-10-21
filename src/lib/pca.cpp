@@ -183,7 +183,10 @@ void pca::solve() {
 
 	arma::Mat<double> cov_mat = utils::make_covariance_matrix(data_);
 	arma::eig_sym(eigval, eigvec, cov_mat, solver_.c_str());
-	arma::uvec indices = arma::sort_index(eigval, 1);
+	//sort_index, just giving number is no longer supported by armadillo so have give direction (a (ascending) or d (decending) ) instead
+	// a == 0, d == 1
+	//arma::uvec indices = arma::sort_index(eigval, 1);
+	arma::uvec indices = arma::sort_index(eigval, "d");
 
 	for (long i=0; i<num_vars_; ++i) {
 		eigval_(i) = eigval(indices(i));
@@ -214,8 +217,10 @@ void pca::bootstrap_eigenvalues_() {
 
 		const arma::Mat<double> cov_mat = utils::make_covariance_matrix(shuffle);
 		arma::eig_sym(eigval, dummy, cov_mat, solver_.c_str());
-		eigval = arma::sort(eigval, 1);
-
+		//sort_index, just giving number is no longer supported by armadillo so have give direction (a (ascending) or d (decending) ) instead
+		// a == 0, d == 1
+		//eigval = arma::sort(eigval, 1);
+		eigval = arma::sort(eigval, "d");
 		energy_boot_(b) = arma::sum(eigval);
 		eigval *= 1./energy_boot_(b);
 		eigval_boot_.row(b) = eigval.t();
