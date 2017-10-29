@@ -23,7 +23,8 @@ std::string conToStr(const Container& con,
 }
 
 arma::Mat<double> make_covariance_matrix(const arma::Mat<double>& data) {
-	return (data.t()*data) * (1./(data.n_rows-1));
+	return arma::cov(data);
+	//return (data.t()*data) * (1./(data.n_rows-1));
 }
 
 arma::Mat<double> make_shuffled_matrix(const arma::Mat<double>& data) {

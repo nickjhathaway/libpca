@@ -25,7 +25,14 @@ public:
 	 * @param num_vars Number of variables
 	 * @throws std::invalid_argument if num_vars is smaller than two
 	 */
-	explicit pca(long num_vars);
+	explicit pca(uint64_t num_vars);
+
+	/**
+	 * construct with an armadillo matrix
+	 * @param data input data
+	 */
+	explicit pca(const arma::Mat<double> & data);
+
 	/**
 	 * @brief Destructor
 	 */
@@ -56,6 +63,13 @@ public:
 	 * @throws std::domain_error if record's size is not equal to the number of variables
 	 */
 	void add_record(const std::vector<double>& record);
+
+	/**
+	 * @brief Adds a matrix of records at once
+	 * @param records a vector of vector of records
+	 */
+	void add_records(const std::vector<std::vector<double>>& records);
+
 	/**
 	 * @brief Returns the previously added record with index record_index
 	 * @param record_index The record index
@@ -251,15 +265,15 @@ public:
 
 protected:
 
-	long num_vars_;
-	long num_records_;
-	long record_buffer_;
+	uint64_t num_vars_;
+	uint64_t num_records_;
+	uint64_t record_buffer_;
 	std::string solver_;
 	bool do_normalize_;
 	bool do_bootstrap_;
-	long num_bootstraps_;
-	long bootstrap_seed_;
-	long num_retained_;
+	uint64_t num_bootstraps_;
+	uint64_t bootstrap_seed_;
+	uint64_t num_retained_;
 	arma::Mat<double> data_;
 	arma::Col<double> energy_;
 	arma::Col<double> energy_boot_;

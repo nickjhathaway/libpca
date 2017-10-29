@@ -30,7 +30,41 @@ pca::pca()
 	  sigma_()
 {}
 
-pca::pca(long num_vars)
+
+pca::pca(const arma::Mat<double> & data):
+		num_vars_(data.n_cols),
+	  num_records_(data.n_rows),
+	  record_buffer_(data.n_rows == 0 ? 1000 : data.n_rows),
+	  solver_("dc"),
+	  do_normalize_(false),
+	  do_bootstrap_(false),
+	  num_bootstraps_(10),
+	  bootstrap_seed_(1),
+	  num_retained_(num_vars_),
+	  data_(data),
+	  energy_(1),
+	  energy_boot_(num_bootstraps_),
+	  eigval_(num_vars_),
+	  eigval_boot_(num_bootstraps_, num_vars_),
+	  eigvec_(num_vars_, num_vars_),
+	  proj_eigvec_(num_vars_, num_vars_),
+	  princomp_(record_buffer_, num_vars_),
+	  mean_(num_vars_),
+	  sigma_(num_vars_)
+{
+	assert_num_vars_();
+	//data_.zeros();
+	eigval_.zeros();
+	eigvec_.zeros();
+	princomp_.zeros();
+	mean_.zeros();
+	sigma_.zeros();
+	eigval_boot_.zeros();
+	energy_boot_.zeros();
+	energy_.zeros();
+}
+
+pca::pca(uint64_t num_vars)
 	: num_vars_(num_vars),
 	  num_records_(0),
 	  record_buffer_(1000),
@@ -126,13 +160,29 @@ void pca::set_num_variables(long num_vars) {
 void pca::add_record(const std::vector<double>& record) {
 	assert_num_vars_();
 
-	if (num_vars_ != long(record.size())){
+	if (num_vars_ != record.size()){
 		throw std::domain_error(utils::join(std::string(__PRETTY_FUNCTION__) + ":Record has the wrong size: ", record.size()));
 	}
 	resize_data_if_needed_();
 	arma::Row<double> row(&record.front(), record.size());
 	data_.row(num_records_) = std::move(row);
 	++num_records_;
+}
+
+void pca::add_records(const std::vector<std::vector<double>>& records){
+	assert_num_vars_();
+	if (num_records_ + records.size() >= record_buffer_) {
+		record_buffer_ += records.size() > record_buffer_ ? records.size() : record_buffer_;
+		data_.resize(record_buffer_, num_vars_);
+	}
+	for(const auto & record : records){
+		if (num_vars_ != record.size()){
+			throw std::domain_error(utils::join(std::string(__PRETTY_FUNCTION__) + ": Error, record has the wrong size: ", record.size(), " expected: ", num_vars_));
+		}
+		arma::Row<double> row(&record.front(), record.size());
+		data_.row(num_records_) = std::move(row);
+		++num_records_;
+	}
 }
 
 std::vector<double> pca::get_record(long record_index) const {
